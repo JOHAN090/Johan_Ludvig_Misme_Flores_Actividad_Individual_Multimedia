@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}C) La Vaca Lola{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Cover de "La Vaca Lola"</h1>
+    <p>Presentación multimedia interactiva.</p>
+</div>
+
+<div class="content-panel vaca-lola-panel">
+    <div class="video-container">
+        <video controls width="100%" class="vaca-lola-video" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+            <source src="{{ url_for('static', filename='videos/vaca.mp4') }}" type="video/mp4">
+            Tu navegador no soporta el elemento de video.
+        </video>
+    </div>
+    
+    <div class="lyrics-container">
+        <h3>Letra</h3>
+        <p>La vaca Lola, la vaca Lola</p>
+        <p>Tiene cabeza y tiene cola</p>
+        <p>La vaca Lola, la vaca Lola</p>
+        <p>Tiene cabeza y tiene cola</p>
+        <p>Y hace muuu</p>
+    </div>
+</div>
+{% endblock %}

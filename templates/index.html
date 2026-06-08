@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Inicio - Procesamiento{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Proyecto Multimedia</h1>
+    <p>Explora diferentes técnicas de procesamiento de imágenes y contenido multimedia interactivo.</p>
+</div>
+
+<div class="card-grid">
+    <a href="{{ url_for('clasificacion') }}" class="card">
+        <div class="card-icon">🎯</div>
+        <h2>A) Clasificación de Texturas</h2>
+        <p>Algoritmo que diferencia superficies en una imagen (césped, tierra, asfalto) similar a clasificación satelital.</p>
+    </a>
+    
+    <a href="{{ url_for('suavizado') }}" class="card">
+        <div class="card-icon">✨</div>
+        <h2>B) Filtro de Suavizado</h2>
+        <p>Aplicación de un filtro promedio de 3x3 píxeles para reducir ruido y suavizar transiciones.</p>
+    </a>
+    
+    <a href="{{ url_for('vaca_lola') }}" class="card">
+        <div class="card-icon">🎵</div>
+        <h2>C) La Vaca Lola</h2>
+        <p>Cover interactivo y multimedia de "La Vaca Lola".</p>
+    </a>
+</div>
+{% endblock %}

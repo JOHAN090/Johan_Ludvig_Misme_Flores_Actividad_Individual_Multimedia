@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}A) Clasificación de Texturas{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Clasificación de Texturas</h1>
+    <p>Sube una imagen y haz clic en cualquier parte de ella para identificar la superficie (césped, tierra, cemento o asfalto) aplicando principios de distancia mínima de imágenes satelitales.</p>
+</div>
+
+<div class="content-panel">
+    {% if not imagen_cargada %}
+    <div class="upload-section">
+        <form action="{{ url_for('clasificacion') }}" method="post" enctype="multipart/form-data" class="upload-form" id="upload-form">
+            <div class="file-drop-area" id="drop-area">
+                <span class="file-msg">Haz clic o arrastra una imagen aquí para cargarla</span>
+                <!-- Auto submit upon file selection -->
+                <input class="file-input" type="file" name="archivo" accept="image/*" required id="file-input" onchange="document.getElementById('upload-form').submit();">
+            </div>
+        </form>
+    </div>
+    {% else %}
+    <div class="results-section">
+        <h2>Imagen Cargada</h2>
+        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 1rem;">Haz clic sobre un píxel de la imagen para clasificar su textura/color.</p>
+        
+        <div style="text-align: center; position: relative;">
+            <!-- The image to click -->
+            <img id="imagen-clasificar" src="{{ url_for('static', filename='uploads/' + imagen_cargada) }}" alt="Imagen Cargada" data-filename="{{ imagen_cargada }}" style="max-width: 100%; border-radius: 8px; cursor: crosshair; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color);">
+        </div>
+
+        <div id="resultado-clasificacion" style="margin-top: 2rem; padding: 1.5rem; background-color: var(--bg-card); border-radius: 8px; border: 1px solid var(--accent-color); text-align: center; display: none;">
+            <h3>Resultado de la Detección</h3>
+            <p style="font-size: 1.2rem; margin-top: 1rem;">
+                Superficie detectada: <strong id="texto-clase" style="color: var(--accent-color);"></strong>
+            </p>
+            <div style="margin-top: 1rem; display: flex; justify-content: center; align-items: center; gap: 10px;">
+                <span>Color exacto extraído:</span>
+                <div id="muestra-color" style="width: 30px; height: 30px; border-radius: 4px; border: 1px solid #fff;"></div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="{{ url_for('clasificacion') }}" class="btn-primary" style="display: inline-block; text-decoration: none;">Cargar otra imagen</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const imagen = document.getElementById('imagen-clasificar');
+        const resultadoDiv = document.getElementById('resultado-clasificacion');
+        const textoClase = document.getElementById('texto-clase');
+        const muestraColor = document.getElementById('muestra-color');
+
+        if (imagen) {
+            imagen.addEventListener('click', function(e) {
+                // Get bounds to calculate exact relative click position
+                const rect = imagen.getBoundingClientRect();
+                
+                // Calculate scale factors because display size may differ from natural size
+                const scaleX = imagen.naturalWidth / rect.width;
+                const scaleY = imagen.naturalHeight / rect.height;
+
+                // Calculate x and y coordinates relative to natural image size
+                const x = Math.round((e.clientX - rect.left) * scaleX);
+                const y = Math.round((e.clientY - rect.top) * scaleY);
+                
+                const filename = imagen.getAttribute('data-filename');
+
+                // Send to backend
+                fetch("{{ url_for('clasificar_pixel') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ x: x, y: y, imagen: filename })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.error) {
+                        alert(data.error);
+                    } else {
+                        textoClase.textContent = data.clase;
+                        muestraColor.style.backgroundColor = data.color_rgb;
+                        resultadoDiv.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Ocurrió un error al clasificar.");
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

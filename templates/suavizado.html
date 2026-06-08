@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}B) Filtro de Suavizado{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Filtro de Suavizado</h1>
+    <p>Sube una imagen para aplicar un filtro promedio (ventana 3x3 píxeles) para reducir ruido y suavizar colores.</p>
+</div>
+
+<div class="content-panel">
+    <div class="upload-section">
+        <form action="{{ url_for('suavizado') }}" method="post" enctype="multipart/form-data" class="upload-form">
+            <div class="file-drop-area" id="drop-area">
+                <span class="file-msg">Haz clic o arrastra una imagen aquí</span>
+                <input class="file-input" type="file" name="archivo" accept="image/*" required id="file-input">
+            </div>
+            
+            <div id="preview-container" style="display: none; margin-top: 20px;">
+                <p>Previsualización:</p>
+                <img id="image-preview" src="#" alt="Tu imagen" style="max-width: 100%; max-height: 300px; border-radius: 8px;">
+            </div>
+
+            <button class="btn-primary" type="submit" id="submit-btn">Aplicar Filtro</button>
+        </form>
+    </div>
+
+    {% if imagen_entrada and imagen_salida %}
+    <div class="results-section">
+        <h2>Resultados</h2>
+        <div class="comparison-grid">
+            <div class="image-box">
+                <h3>Original</h3>
+                <img src="{{ url_for('static', filename='uploads/' + imagen_entrada) }}" alt="Original">
+            </div>
+            <div class="image-box">
+                <h3>Suavizada (3x3)</h3>
+                <img src="{{ url_for('static', filename='uploads/' + imagen_salida) }}" alt="Suavizada">
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
